@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Square Management | Intelligence Stratégique IA 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sq-gold: #bd8e43;
+            --sq-navy: #0f172a;
+            --sq-bg: #fdfdfd;
+            --sq-border: #f1f5f9;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--sq-bg); color: #334155; font-size: 0.95rem; }
+        h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif; }
+        
+        .gold-bg { background-color: var(--sq-gold); }
+        .gold-text { color: var(--sq-gold); }
+        .gold-border { border-color: var(--sq-gold); }
+
+        .card-consulting {
+            background: white;
+            border: 1px solid var(--sq-border);
+            border-top: 3px solid var(--sq-gold);
+            box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+        .card-consulting:hover { transform: translateY(-2px); box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.06); }
+
+        .nav-item { cursor: pointer; position: relative; padding: 1.5rem 0; font-size: 0.8rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .nav-item.active { color: var(--sq-gold); font-weight: 800; }
+        .nav-item.active::after {
+            content: ''; position: absolute; bottom: 0.75rem; left: 0; width: 100%; height: 2px; background-color: var(--sq-gold);
+        }
+
+        .hidden-tab { display: none; }
+        
+        .prose-report p { margin-bottom: 1.5rem; line-height: 1.8; font-size: 0.95rem; color: #334155; text-align: justify; }
+        .report-section { border-left: 4px solid var(--sq-gold); padding-left: 1.5rem; margin-bottom: 4rem; }
+        .report-section h4 { font-weight: 800; color: var(--sq-navy); text-transform: uppercase; font-size: 1.2rem; margin-bottom: 1.5rem; letter-spacing: 0.03em; }
+        
+        .report-table { width: 100%; font-size: 0.8rem; border-collapse: collapse; margin: 2rem 0; border: 1px solid var(--sq-border); }
+        .report-table th { background: #f8fafc; border: 1px solid var(--sq-border); padding: 1rem; text-align: left; font-weight: 700; color: var(--sq-navy); text-transform: uppercase; font-size: 0.7rem; }
+        .report-table td { border: 1px solid var(--sq-border); padding: 1rem; vertical-align: top; line-height: 1.6; }
+
+        .badge-impact { font-size: 9px; padding: 2px 6px; border-radius: 3px; font-weight: 800; text-transform: uppercase; }
+        .impact-critical { background: #fee2e2; color: #b91c1c; }
+        .impact-strategic { background: #fef3c7; color: #92400e; }
+
+        input[type="range"] { accent-color: var(--sq-gold); height: 4px; }
+        .chart-container { position: relative; width: 100%; height: 320px; }
+
+        .btn-gold-branded {
+            background-color: var(--sq-gold);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px -1px rgba(189, 142, 67, 0.2);
+            transition: all 0.2s ease;
+        }
+        .btn-gold-branded:hover {
+            background-color: #a67d3a;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(189, 142, 67, 0.3);
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .hidden-tab { display: block !important; }
+            #content-full { display: block !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- HEADER NAVIGATION -->
+    <header class="bg-white border-b sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-24">
+            <div class="flex items-center gap-8">
+                <img src="image_88df27.png" alt="Square Logo" class="h-16 w-auto" onerror="this.style.display='none';">
+                <div class="h-10 w-px bg-gray-100 hidden lg:block"></div>
+                <div class="hidden md:block">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block leading-none mb-1">Intelligence Platform 2026</span>
+                    <a href="https://drive.google.com/drive/folders/1njPjEktouLw70lCepWFIxiv1uoeB3ag5?usp=drive_link" target="_blank" class="text-[9px] font-bold text-gold hover:underline uppercase italic">Drive Analytique →</a>
+                </div>
+            </div>
+            
+            <nav class="hidden lg:flex gap-8">
+                <span onclick="switchTab('dash')" id="nav-dash" class="nav-item active">Synthèse</span>
+                <span onclick="switchTab('radar')" id="nav-radar" class="nav-item">Radar Actu</span>
+                <span onclick="switchTab('infra')" id="nav-infra" class="nav-item">Infrastructure</span>
+                <span onclick="switchTab('geo')" id="nav-geo" class="nav-item">GEO Strategy</span>
+                <span onclick="switchTab('full')" id="nav-full" class="nav-item font-bold">Synthèse rapport</span>
+            </nav>
+
+            <a href="https://docs.google.com/document/d/1b6dXBwTmwFNHt1lr8Boyh8JN-xpXhiOYaqHz6WeO6CY/export?format=pdf" 
+               target="_blank" 
+               class="btn-gold-branded">
+                Télécharger PDF
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-12">
+
+        <!-- 1. SYNTHÈSE (DASHBOARD) -->
+        <div id="content-dash" class="fade-in space-y-12">
+            <section class="bg-slate-900 text-white p-12 rounded-xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-10 border-r-[15px] gold-border relative overflow-hidden">
+                <div class="max-w-xl relative z-10">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="h-0.5 w-12 gold-bg"></div>
+                        <span class="text-gold font-bold uppercase tracking-[0.4em] text-[11px]">Nexus IA Q1 2026</span>
+                    </div>
+                    <h2 class="text-4xl font-bold mb-6 italic leading-tight uppercase tracking-tight">Hyper-Concentration & Industrialisation</h2>
+                    <p class="text-slate-400 text-lg leading-relaxed font-light">Le secteur capte 50% des financements VC mondiaux. Pivot vers le raisonnement multi-étapes et la décarbonation via le nucléaire EPR2.</p>
+                </div>
+                <div class="grid grid-cols-2 gap-6 relative z-10">
+                    <div class="bg-slate-800 p-8 border-l-4 gold-border rounded shadow-lg">
+                        <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Dépenses IA 26</span>
+                        <div class="text-4xl font-bold gold-text mt-2">$2,52 T</div>
+                        <p class="text-[9px] text-green-400 font-bold uppercase mt-2 tracking-widest">↑ +44% YoY</p>
+                    </div>
+                    <div class="bg-slate-800 p-8 border-l-4 gold-border rounded shadow-lg">
+                        <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Global Data</span>
+                        <div class="text-4xl font-bold mt-2">221 ZB</div>
+                        <p class="text-[9px] text-slate-400 italic mt-2">+40 ZB / an</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div class="card-consulting p-12">
+                    <h3 class="font-bold text-xl mb-10 uppercase flex items-center gap-4 tracking-tighter">
+                        <span class="w-3 h-8 gold-bg"></span> Benchmarking Maturité Sectorielle
+                    </h3>
+                    <div class="chart-container"><canvas id="maturityChart"></canvas></div>
+                </div>
+                <div class="card-consulting p-12">
+                    <h3 class="font-bold text-xl mb-10 uppercase flex items-center gap-4 tracking-tighter">
+                        <span class="w-3 h-8 gold-bg"></span> Segmentation du Marché (Mds$)
+                    </h3>
+                    <div class="chart-container"><canvas id="marketChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. RADAR ACTU (12 FAITS) -->
+        <div id="content-radar" class="hidden-tab fade-in space-y-12">
+            <div class="border-b-4 border-gray-100 pb-8 mb-12">
+                <h2 class="text-5xl font-bold uppercase tracking-tighter italic">Radar Stratégique</h2>
+                <p class="text-slate-500 mt-3 text-lg">Sélection des 12 ruptures identifiées par le Pôle IA Square Management.</p>
+            </div>
+            <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"></div>
+        </div>
+
+        <!-- 3. INFRASTRUCTURE & ENERGIE -->
+        <div id="content-infra" class="hidden-tab fade-in space-y-16">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <div class="lg:col-span-1 no-print">
+                    <div class="card-consulting p-10 bg-slate-900 text-white border-none shadow-2xl sticky top-32">
+                        <h4 class="gold-text font-bold text-xs mb-10 uppercase tracking-[0.4em] italic">AI TCO Simulator</h4>
+                        <div class="space-y-12">
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase mb-4 text-slate-500">Inférence Mensuelle (M-Tokens)</label>
+                                <input type="range" id="tcoTokens" min="10" max="1000" step="10" value="250" class="w-full">
+                                <div class="flex justify-between text-[11px] mt-4 font-mono gold-text font-bold">
+                                    <span id="tokenLabel">250M</span>
+                                    <span class="opacity-20 uppercase">Capacité Max</span>
+                                </div>
+                            </div>
+                            <div class="p-10 bg-slate-800 rounded-xl border border-slate-700 space-y-10 shadow-inner">
+                                <div class="flex justify-between items-center text-xs font-bold uppercase tracking-widest"><span class="text-slate-400">Cloud OpEx</span><span id="costCloud" class="text-2xl font-bold">11,250 €</span></div>
+                                <div class="flex justify-between items-center text-xs font-bold uppercase tracking-widest"><span class="text-slate-400">Souverain CapEx</span><span id="costSov" class="text-2xl font-bold gold-text">6,750 €</span></div>
+                                <div class="pt-8 border-t border-slate-700 text-center text-[10px] font-black text-green-400 uppercase tracking-widest">Saving Nucléaire : +40%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 space-y-12">
+                    <div class="card-consulting p-16">
+                        <h3 class="font-bold text-3xl mb-12 uppercase italic tracking-tighter">Nexus Énergie : La Faim Électrique</h3>
+                        <div class="prose prose-slate max-w-none text-sm leading-relaxed text-slate-600">
+                            <p class="text-2xl font-light text-slate-900 mb-10 italic leading-relaxed">Saturation européenne : 40% des grilles de raccordement ont plus de 40 ans.</p>
+                            <p>Le plan Nouveau Nucléaire Français (NNF) d'EDF est estimé à 84 Mds€ pour sécuriser les 35 GW nécessaires d'ici 2030. La lutte contre la <strong>Phantom Demand</strong> devient le levier opérationnel majeur pour libérer 15 GW de puissance continue en UE.</p>
+                            <div class="h-[380px] mt-12"><canvas id="energyBar"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. GEO STRATÉGIE -->
+        <div id="content-geo" class="hidden-tab fade-in space-y-16">
+            <div class="flex items-center gap-16 mb-16">
+                <div class="text-7xl font-bold gold-text opacity-20 italic select-none">GEO</div>
+                <div class="h-20 w-1 gold-bg"></div>
+                <div>
+                    <h2 class="text-5xl font-bold uppercase tracking-tight italic">GEO Strategy 2026</h2>
+                    <p class="text-slate-500 text-2xl font-light mt-3">Le virage des mots-clés vers les entités sémantiques certifiées.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="card-consulting p-16">
+                    <h3 class="font-bold text-lg mb-12 uppercase tracking-widest text-center">Impact Zero-Click (AI Overviews)</h3>
+                    <div class="space-y-12">
+                        <div>
+                            <input type="range" id="geoInput" min="1000" max="500000" step="1000" value="100000" class="w-full">
+                            <div class="flex justify-between text-xs mt-4 font-mono font-bold uppercase tracking-widest">
+                                <span id="geoValueDisplay">100,000</span>
+                                <span class="opacity-30">Visites / Mois</span>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-12 rounded-2xl border border-slate-200 grid grid-cols-2 gap-12 text-center shadow-inner">
+                            <div><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Perte SEO</span><div class="text-4xl font-bold text-red-500 mt-2" id="geoLoss">-25,000</div></div>
+                            <div><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Gain GEO</span><div class="text-4xl font-bold text-green-500 mt-2" id="geoGain">+15,000</div></div>
+                            <div class="col-span-2 border-t-2 pt-10 border-gray-100">
+                                <span class="text-[11px] font-bold uppercase text-slate-400 tracking-[0.4em] italic">Résiduel Net Estimé Q4-26</span>
+                                <div class="text-[100px] font-bold gold-text mt-6 leading-none" id="geoFinal">90,000</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-consulting p-16 bg-slate-900 text-white flex flex-col justify-center border-none">
+                    <h3 class="font-bold text-2xl gold-text uppercase tracking-widest mb-12 italic">Leviers de Visibilité</h3>
+                    <div class="space-y-10">
+                        <div class="report-section border-gold/40 mb-0">
+                            <h5 class="font-bold text-lg mb-2">Topic Targeting 2.0</h5>
+                            <p class="text-sm text-slate-400 leading-relaxed">Pivoter vers la profondeur factuelle. Le grounding IA privilégie les sources couvrant 100% du spectre sémantique d'un sujet.</p>
+                        </div>
+                        <div class="report-section border-gold/40 mb-0">
+                            <h5 class="font-bold text-lg mb-2">Schema FAQ & JSON-LD</h5>
+                            <p class="text-sm text-slate-400 leading-relaxed">43% des citations dans SearchGPT proviennent de données structurées balisées. La certification technique est le nouveau SEO.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. SYNTHÈSE RAPPORT (DOCUMENT INTÉGRAL NETTOYÉ) -->
+        <div id="content-full" class="hidden-tab fade-in space-y-24">
+            <div class="card-consulting border-none shadow-2xl bg-white p-12 md:p-32">
+                <div class="max-w-4xl mx-auto prose-report max-w-none">
+                    
+                    <div class="text-center mb-32 no-print">
+                        <span class="gold-text font-bold text-[11px] uppercase tracking-[1em]">Rapport Stratégique Square Q1-2026</span>
+                        <h2 class="text-6xl font-bold mt-10 leading-tight uppercase italic tracking-tighter">Synthèse Intégrale</h2>
+                        <div class="h-1.5 w-28 gold-bg mx-auto mt-12 rounded-full"></div>
+                    </div>
+
+                    <!-- Section I -->
+                    <div class="report-section">
+                        <h4>I. L’Économie de l’Hyper-Concentration</h4>
+                        <p>L’industrie de l’intelligence artificielle a achevé l’année 2025 sur une trajectoire de concentration capitalistique sans précédent. En décembre 2025, le secteur a capté près de <strong>50 % de l’ensemble des financements mondiaux</strong>, contre 34 % en 2024. Le montant total investi s’élève à <strong>202,3 milliards de dollars</strong>, marquant une croissance de 75 % par rapport à l’exercice précédent.</p>
+                        <p>L’opération phare reste la levée record d’OpenAI en décembre 2025, atteignant 40 Md$ sous l’égide de SoftBank, valorisant désormais la société à 500 Mds$. Parallèlement, Anthropic a clôturé l’année à 183 Mds$.</p>
+                        
+                        <table class="report-table">
+                            <thead>
+                                <tr><th>Entreprise</th><th>Date</th><th>Montant</th><th>Valorisation</th><th>Investisseur</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>OpenAI</td><td>Déc. 2025</td><td>40 Md$</td><td>500 Md$</td><td>SoftBank</td></tr>
+                                <tr><td>Meta (Scale AI)</td><td>Déc. 2025</td><td>14,3 Md$</td><td>N/A</td><td>Meta</td></tr>
+                                <tr><td>Anthropic</td><td>Déc. 2025</td><td>5 Md$</td><td>183 Md$</td><td>Divers</td></tr>
+                                <tr><td>Humans&</td><td>Janv. 2026</td><td>480 M$</td><td>N/A</td><td>Seed Record</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Section II -->
+                    <div class="report-section">
+                        <h4>II. Frontière Technologique : De la Génération au Raisonnement</h4>
+                        <p>Le T4 2025 marque l’avènement des modèles de raisonnement. OpenAI a lancé <strong>GPT-5.2</strong> le 11 décembre 2025 (400k tokens), affichant une performance de 70,9 % sur GDPval. La disruption majeure provient de DeepSeek V3.2 égalant Gemini 3.0 Pro avec des coûts d’entraînement inférieurs de 90 % grâce à l’optimisation mHC.</p>
+                        <table class="report-table">
+                            <thead>
+                                <tr><th>Modèle</th><th>Sortie</th><th>Contexte</th><th>Benchmark</th><th>Innovation</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>GPT-5.2</td><td>Déc. 2025</td><td>400K</td><td>70,9% GDPval</td><td>Reasoning-first</td></tr>
+                                <tr><td>DeepSeek V3.2</td><td>Déc. 2025</td><td>128K</td><td>93,1% AIME</td><td>Sparse Attention</td></tr>
+                                <tr><td>Mistral Large 3</td><td>Déc. 2025</td><td>128K+</td><td>Apache 2.0</td><td>MoE Granulaire</td></tr>
+                                <tr><td>Mistral Vibe 2.0</td><td>Janv. 2026</td><td>N/A</td><td>Coding Agent</td><td>Native Terminal</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Section III -->
+                    <div class="report-section">
+                        <h4>III. Infrastructure et Énergie : Nexus Électrique</h4>
+                        <p>Les data centers consomment désormais 1,5 % de l’électricité mondiale (415 TWh), prévision de 945 TWh d’ici 2030. Face à la faim électrique, EDF a soumis son plan Nouveau Nucléaire Français (NNF) estimé à 84 Mds€ pour sécuriser l'indépendance de calcul européenne.</p>
+                    </div>
+
+                    <!-- Section IV -->
+                    <div class="report-section">
+                        <h4>IV. Cadre Réglementaire : EU AI Act 2026</h4>
+                        <p>Le 2 août 2026 marque l’applicabilité générale du règlement avec des sanctions pouvant atteindre 7% du CA mondial. L’année est jalonnée par l’audit de littératie IA obligatoire pour toutes les organisations opérant en UE.</p>
+                        <table class="report-table">
+                            <thead>
+                                <tr><th>Date limite</th><th>Acteur</th><th>Obligation</th><th>Impact</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>2 Fév. 2026</td><td>Commission</td><td>Lignes Art. 6</td><td>Définition haut risque</td></tr>
+                                <tr><td>2 Mai 2026</td><td>Office IA</td><td>Codes GPAI</td><td>Conformité modèles</td></tr>
+                                <tr><td>2 Août 2026</td><td>Opérateurs</td><td>Droit applicable</td><td>Sanctions effectives</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-40 pt-16 border-t-2 flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-[0.5em] border-slate-200">
+                        <span>Édité par Square Management • 2026</span>
+                        <span>Document Confidentiel</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-white py-16 no-print border-t-8 gold-border">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
+            <img src="image_88df27.png" alt="Square Logo" class="h-12 w-auto brightness-200 contrast-100 opacity-70">
+            <p class="text-[12px] font-bold text-slate-500 uppercase tracking-[0.4em] italic">Intelligence Stratégique • Square Management • Janvier 2026</p>
+            <div class="flex gap-6 justify-center">
+                <div class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center text-xs text-gold">in</div>
+                <div class="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center text-xs text-gold">X</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // NAVIGATION
+        function switchTab(id) {
+            const tabs = ['dash', 'radar', 'infra', 'geo', 'full'];
+            tabs.forEach(t => {
+                const c = document.getElementById('content-' + t);
+                const n = document.getElementById('nav-' + t);
+                if (c) c.classList.add('hidden-tab');
+                if (n) n.classList.remove('active');
+            });
+            const activeC = document.getElementById('content-' + id);
+            const activeN = document.getElementById('nav-' + id);
+            if (activeC) activeC.classList.remove('hidden-tab');
+            if (activeN) activeN.classList.add('active');
+
+            if (id === 'dash') setTimeout(initDashCharts, 50);
+            if (id === 'infra') setTimeout(initInfraCharts, 50);
+        }
+
+        // RADAR ACTU (12 ITEMS)
+        const newsItems = [
+            { id: 1, impact: 'Critical', date: 'Déc 2025', title: 'OpenAI : Mégatour record SoftBank', desc: 'Levée de $40 Mds valorisant OpenAI à $500 Mds. L\'investissement finance l\'infrastructure Orion pour GPT-5.', cat: 'Finance' },
+            { id: 2, impact: 'Critical', date: 'Jan 2026', title: 'DeepSeek-R1 : Rupture o1-like', desc: 'Architecture mHC permettant une performance raisonnement supérieure avec des coûts divisés par 10.', cat: 'Tech' },
+            { id: 3, impact: 'Strategic', date: 'Déc 2025', title: 'GPT-5.2 : Multi-step Reasoning', desc: 'Fenêtre de 400k tokens. Orchestration de projets multi-étapes sans boucle de feedback humaine.', cat: 'Tech' },
+            { id: 4, impact: 'Critical', date: 'Jan 2026', title: 'AI Act : Article 6 Publication', desc: 'La Commission définit les seuils critiques pour les systèmes haut risque. Sanctions effectives dès Août.', cat: 'Reg' },
+            { id: 5, impact: 'Strategic', date: 'Nov 2025', title: 'Plan EDF Nouveau Nucléaire', desc: 'Budget de 84 Mds€ pour sécuriser l\'IA française. Premier raccordement SMR sur site data center.', cat: 'Infra' },
+            { id: 6, impact: 'Strategic', date: 'Jan 2026', title: 'DeepSeekMath : Score 83.3%', desc: 'Rupture sur le benchmark IMO. L\'IA dépasse les capacités humaines sur la logique mathématique pure.', cat: 'Tech' },
+            { id: 7, impact: 'Strategic', date: 'Déc 2025', title: 'Meta / Scale AI : Talent Acq', desc: 'Investissement de $14,3 Mds. Transfert stratégique de 10 cadres clés et du CEO Alexandr Wang.', cat: 'Finance' },
+            { id: 8, impact: 'Strategic', date: 'Jan 2026', title: 'Mistral Vibe 2.0 Native agent', desc: 'Agent natif terminal orchestrant des modifications de code multi-fichiers en contexte global.', cat: 'Tech' },
+            { id: 9, impact: 'Strategic', date: 'Nov 2025', title: 'Humans& : $480M Seed Round', desc: 'Record historique en amorçage, soulignant l\'intérêt pour la recherche fondamentale IA hybride.', cat: 'Finance' },
+            { id: 10, impact: 'Strategic', date: 'Déc 2025', title: 'Neocloud Boom ($20B)', desc: 'Revenus prévisionnels pour les fournisseurs GPU spécialisés défiant Azure et AWS sur le segment Compute.', cat: 'Tech' },
+            { id: 11, impact: 'Strategic', date: 'Jan 2026', title: 'Anysphere Cursor Val $29B', desc: 'Cursor s\'impose comme l\'outil n°1 de productivité IA pour les équipes de développement senior.', cat: 'Finance' },
+            { id: 12, impact: 'Strategic', date: 'Jan 2026', title: 'Capital One / Brex Acquisition', desc: 'Sortie à $5,15 Mds. Signe de consolidation et correction des valorisations fintech IA.', cat: 'Finance' }
+        ];
+
+        function renderNews() {
+            const grid = document.getElementById('newsGrid');
+            if (!grid) return;
+            grid.innerHTML = newsItems.map(item => `
+                <div class="card-consulting p-10 flex flex-col justify-between group cursor-pointer transition-all">
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="badge-impact ${item.impact === 'Critical' ? 'impact-critical' : 'impact-strategic'}">${item.impact}</span>
+                            <span class="text-gray-400 font-mono text-[9px] uppercase tracking-tighter">${item.date}</span>
+                        </div>
+                        <h4 class="font-bold text-sm mb-4 group-hover:text-gold transition-colors leading-tight uppercase italic">${item.title}</h4>
+                        <p class="text-[11px] text-gray-500 leading-relaxed mb-6">${item.desc}</p>
+                    </div>
+                    <div class="pt-6 border-t border-gray-100 flex justify-between items-center text-[9px] font-bold uppercase text-slate-300">
+                        <span>Catégorie : ${item.cat}</span>
+                        <span class="text-gold">→</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // CALCULATEURS & CHARTS
+        function updateTCO() {
+            const el = document.getElementById('tcoTokens');
+            if(!el) return;
+            const v = parseInt(el.value);
+            if(document.getElementById('tokenLabel')) document.getElementById('tokenLabel').innerText = `${v}M`;
+            if(document.getElementById('costCloud')) document.getElementById('costCloud').innerText = (v * 45).toLocaleString() + ' €';
+            if(document.getElementById('costSov')) document.getElementById('costSov').innerText = (v * 27).toLocaleString() + ' €';
+        }
+        if(document.getElementById('tcoTokens')) document.getElementById('tcoTokens').addEventListener('input', updateTCO);
+
+        function updateGEO() {
+            const el = document.getElementById('geoInput');
+            if(!el) return;
+            const v = parseInt(el.value);
+            if(document.getElementById('geoValueDisplay')) document.getElementById('geoValueDisplay').innerText = v.toLocaleString();
+            const l = Math.round(v * 0.25);
+            const g = Math.round((v - l) * 0.15);
+            if(document.getElementById('geoLoss')) document.getElementById('geoLoss').innerText = `-${l.toLocaleString()}`;
+            if(document.getElementById('geoGain')) document.getElementById('geoGain').innerText = `+${g.toLocaleString()}`;
+            if(document.getElementById('geoFinal')) document.getElementById('geoFinal').innerText = (v - l + g).toLocaleString();
+        }
+        if(document.getElementById('geoInput')) document.getElementById('geoInput').addEventListener('input', updateGEO);
+
+        let maturityChart, marketChart, energyBar;
+        function initDashCharts() {
+            if (maturityChart) maturityChart.destroy();
+            maturityChart = new Chart(document.getElementById('maturityChart').getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels: ['Gouv (AI Act)', 'Souveraineté', 'Éthique', 'Talents IA', 'ROI Business', 'Qualité Data'],
+                    datasets: [{ label: 'Moyenne 2025', data: [40, 50, 30, 45, 40, 55], borderColor: '#94a3b8', backgroundColor: 'rgba(148, 163, 184, 0.1)' },
+                              { label: 'Square Target', data: [90, 85, 80, 80, 75, 85], borderColor: '#bd8e43', backgroundColor: 'rgba(189, 142, 67, 0.2)' }]
+                },
+                options: { maintainAspectRatio: false }
+            });
+            if (marketChart) marketChart.destroy();
+            marketChart = new Chart(document.getElementById('marketChart').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: ['Conseil', 'Infrastructure', 'Software'], datasets: [{ data: [588, 401, 766], backgroundColor: ['#1e293b', '#bd8e43', '#cbd5e1'], borderWidth: 0 }] },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function initInfraCharts() {
+            if (energyBar) energyBar.destroy();
+            energyBar = new Chart(document.getElementById('energyBar').getContext('2d'), {
+                type: 'bar',
+                data: { labels: ['FRA', 'UK', 'NL', 'GER', 'IRL'], datasets: [{ label: 'Saturation (GW)', data: [1.9, 2.3, 1.4, 1.8, 2.2], backgroundColor: '#1e293b', hoverBackgroundColor: '#bd8e43' }] },
+                options: { maintainAspectRatio: false, scales: { x: { grid: { display: false } } } }
+            });
+        }
+
+        window.onload = () => { renderNews(); initDashCharts(); updateTCO(); updateGEO(); };
+    </script>
+</body>
+</html>
